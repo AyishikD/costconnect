@@ -4,29 +4,34 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 5001;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
-const expenseRoutes = require('../routes/expenses');
-app.use('/api/expenses', expenseRoutes);
+// DB Connection Middleware
+let isConnected = false;
+async function connectDB() {
+    if (isConnected) return;
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+        isConnected = true;
+        console.log('Connected to MongoDB Atlas');
+    } catch (err) {
+        console.error('Error connecting to MongoDB:', err);
+    }
+}
 
-// Database Connection
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB Atlas'))
-    .catch(err => console.error('Error connecting to MongoDB:', err));
-
-// app.get('/', (req, res) => {
-//     res.send('CostConnect API is running...');
-// });
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'CostConnect API is running...' });
+app.use(async (req, res, next) => {
+    await connectDB();
+    next();
 });
 
-// For Vercel, we export the app
+// Routes
+const expenseRoutes = require('./routes/expenses');
+app.use('/api/expenses', expenseRoutes);
+
+app.get('/api/health', (req, res) => {
+    res.json({ ok: true });
+});
+
 module.exports = app;
