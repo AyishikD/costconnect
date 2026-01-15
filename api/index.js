@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const expenseRoutes = require('./routes/expenses');
+const expenseRoutes = require('../routes/expenses');
 app.use('/api/expenses', expenseRoutes);
 
 // Database Connection
@@ -23,6 +23,5 @@ app.get('/', (req, res) => {
     res.send('CostConnect API is running...');
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// For Vercel, we export the app
+module.exports = app;
