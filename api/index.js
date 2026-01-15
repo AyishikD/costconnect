@@ -19,8 +19,13 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('Connected to MongoDB Atlas'))
     .catch(err => console.error('Error connecting to MongoDB:', err));
 
-app.get('/', (req, res) => {
-    res.send('CostConnect API is running...');
+// app.get('/', (req, res) => {
+//     res.send('CostConnect API is running...');
+// });
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', message: 'CostConnect API is running...' });
 });
 
 // For Vercel, we export the app

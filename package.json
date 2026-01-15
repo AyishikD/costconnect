@@ -1,8 +1,7 @@
 {
-  "name": "backend",
+  "name": "costconnect",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Monthly Cost Calculator",
   "scripts": {
     "start": "node index.js",
     "server": "nodemon index.js",
