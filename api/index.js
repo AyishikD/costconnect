@@ -8,16 +8,35 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Request Logging Middleware
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
+
 // DB Connection Middleware
 let isConnected = false;
 async function connectDB() {
-    if (isConnected) return;
+    if (isConnected) {
+        console.log('Using existing MongoDB connection');
+        return;
+    }
+
+    if (!process.env.MONGODB_URI) {
+        console.error('CRITICAL: MONGODB_URI is not defined in environment variables');
+        return;
+    }
+
     try {
+        const maskedUri = process.env.MONGODB_URI.replace(/\/\/.*@/, '//****:****@');
+        console.log(`Attempting to connect to MongoDB: ${maskedUri}`);
+
         await mongoose.connect(process.env.MONGODB_URI);
         isConnected = true;
-        console.log('Connected to MongoDB Atlas');
+        console.log('SUCCESS: Connected to MongoDB Atlas');
     } catch (err) {
-        console.error('Error connecting to MongoDB:', err);
+        console.error('ERROR connecting to MongoDB:', err.message);
+        console.error('Full connection error:', err);
     }
 }
 

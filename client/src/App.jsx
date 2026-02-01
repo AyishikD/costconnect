@@ -27,11 +27,21 @@ function App() {
 
     const fetchExpenses = async () => {
         setLoading(true);
+        const params = `month=${month}&year=${year}`;
+        const url = `${API_URL}?${params}`;
+        console.log(`[Frontend] Fetching expenses from: ${url}`);
+
         try {
-            const response = await axios.get(`${API_URL}?month=${month}&year=${year}`);
+            const response = await axios.get(url);
+            console.log(`[Frontend] Successfully fetched ${response.data.length} expenses`);
             setExpenses(response.data);
         } catch (err) {
-            console.error('Error fetching expenses:', err);
+            console.error('[Frontend] Error fetching expenses:', {
+                message: err.message,
+                response: err.response?.data,
+                status: err.response?.status,
+                url: url
+            });
         } finally {
             setLoading(false);
         }

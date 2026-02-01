@@ -6,19 +6,25 @@ const Expense = require('../models/Expense');
 router.get('/', async (req, res) => {
     try {
         const { month, year } = req.query;
+        console.log(`[Expenses] Fetching for month=${month}, year=${year}`);
+
         if (!month || !year) {
+            console.warn('[Expenses] Missing month or year');
             return res.status(400).json({ message: 'Month and year are required' });
         }
 
         const startDate = new Date(year, month - 1, 1);
         const endDate = new Date(year, month, 0, 23, 59, 59);
+        console.log(`[Expenses] Date range: ${startDate.toISOString()} to ${endDate.toISOString()}`);
 
         const expenses = await Expense.find({
             date: { $gte: startDate, $lte: endDate }
         }).sort({ date: 1 });
 
+        console.log(`[Expenses] Found ${expenses.length} records`);
         res.json(expenses);
     } catch (err) {
+        console.error('[Expenses] Error fetching:', err.message);
         res.status(500).json({ message: err.message });
     }
 });
