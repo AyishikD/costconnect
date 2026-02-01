@@ -50,7 +50,7 @@ function App() {
     const handleSave = async (date) => {
         try {
             const payload = {
-                date,
+                date: new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())).toISOString(),
                 amount: parseFloat(editForm.amount) || 0,
                 description: editForm.description || 'No description',
                 category: editForm.category
@@ -191,29 +191,26 @@ function App() {
                                                         initial={{ opacity: 0 }}
                                                         animate={{ opacity: 1 }}
                                                         className="date-row"
-                                                    >
-                                                        <td></td> {/* Empty date cell, header handles it */}
-                                                        {editingId === exp._id ? (
-                                                            <EditRow
-                                                                editForm={editForm}
-                                                                setEditForm={setEditForm}
-                                                                onSave={() => handleSave(date)}
-                                                                onCancel={() => setEditingId(null)}
-                                                            />
-                                                        ) : (
-                                                            <>
-                                                                <td>{exp.description}</td>
-                                                                <td><span className="badge">{exp.category}</span></td>
-                                                                <td><strong>₹{exp.amount.toFixed(2)}</strong></td>
-                                                                <td>
-                                                                    <div style={{ display: 'flex', gap: '0.6rem' }}>
-                                                                        <button className="btn-icon save" onClick={() => startEditing(exp, date)}><Save size={16} title="Edit" /></button>
-                                                                        <button className="btn-icon delete" onClick={() => handleDelete(exp._id)}><Trash2 size={16} title="Delete" /></button>
-                                                                    </div>
-                                                                </td>
-                                                            </>
-                                                        )}
-                                                    </motion.tr>
+                                                    ><td></td>{editingId === exp._id ? (
+                                                        <EditRow
+                                                            editForm={editForm}
+                                                            setEditForm={setEditForm}
+                                                            onSave={() => handleSave(date)}
+                                                            onCancel={() => setEditingId(null)}
+                                                        />
+                                                    ) : (
+                                                        <>
+                                                            <td>{exp.description}</td>
+                                                            <td><span className="badge">{exp.category}</span></td>
+                                                            <td><strong>₹{exp.amount.toFixed(2)}</strong></td>
+                                                            <td>
+                                                                <div style={{ display: 'flex', gap: '0.6rem' }}>
+                                                                    <button className="btn-icon save" onClick={() => startEditing(exp, date)}><Save size={16} title="Edit" /></button>
+                                                                    <button className="btn-icon delete" onClick={() => handleDelete(exp._id)}><Trash2 size={16} title="Delete" /></button>
+                                                                </div>
+                                                            </td>
+                                                        </>
+                                                    )}</motion.tr>
                                                 ))}
 
                                                 {/* Adding New Row for this Day */}
@@ -222,27 +219,20 @@ function App() {
                                                         initial={{ opacity: 0, height: 0 }}
                                                         animate={{ opacity: 1, height: 'auto' }}
                                                         className="date-row"
-                                                    >
-                                                        <td></td>
-                                                        <EditRow
+                                                    ><td></td><EditRow
                                                             editForm={editForm}
                                                             setEditForm={setEditForm}
                                                             onSave={() => handleSave(date)}
                                                             onCancel={() => setEditingId(null)}
-                                                        />
-                                                    </motion.tr>
+                                                        /></motion.tr>
                                                 ) : (
-                                                    <tr className="date-row action-row">
-                                                        <td></td>
-                                                        <td colSpan="3" style={{ color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: '0.8rem' }}>
-                                                            {dayExpenses.length === 0 ? 'No entries for this day' : ''}
-                                                        </td>
-                                                        <td>
+                                                    <tr className="date-row action-row"><td></td><td colSpan="3" style={{ color: 'var(--text-secondary)', fontStyle: 'italic', fontSize: '0.8rem' }}>
+                                                        {dayExpenses.length === 0 ? 'No entries for this day' : ''}
+                                                    </td><td>
                                                             <button className="btn-icon add-btn" onClick={() => startEditing(null, date)}>
                                                                 <Plus size={16} /> Add Entry
                                                             </button>
-                                                        </td>
-                                                    </tr>
+                                                        </td></tr>
                                                 )}
                                             </React.Fragment>
                                         );

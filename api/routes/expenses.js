@@ -13,15 +13,23 @@ router.get('/', async (req, res) => {
             return res.status(400).json({ message: 'Month and year are required' });
         }
 
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 0, 23, 59, 59);
-        console.log(`[Expenses] Date range: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+        // Use UTC boundaries to avoid timezone shifts
+        // We widen the range by 12 hours on each side to catch records
+        // saved in local timezones (like IST) that might fall just outside
+        // a strict UTC month boundary.
+        const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
+        startDate.setHours(startDate.getHours() - 12);
+
+        const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+        endDate.setHours(endDate.getHours() + 12);
+
+        console.log(`[Expenses] Widened UTC Date range: ${startDate.toISOString()} to ${endDate.toISOString()}`);
 
         const expenses = await Expense.find({
             date: { $gte: startDate, $lte: endDate }
         }).sort({ date: 1 });
 
-        console.log(`[Expenses] Found ${expenses.length} records`);
+        console.log(`[Expenses] Found ${expenses.length} records in range`);
         res.json(expenses);
     } catch (err) {
         console.error('[Expenses] Error fetching:', err.message);
